@@ -23,11 +23,12 @@ if (q.get("error")) {
   var cmd = "curl -s -X POST https://open.tiktokapis.com/v2/oauth/token/ \\\n" +
     "  -H 'Content-Type: application/x-www-form-urlencoded' \\\n" +
     "  --data-urlencode 'client_key=" + key + "' \\\n" +
-    "  --data-urlencode 'client_secret=PASTE_SECRET_HERE' \\\n" +
+    "  --data-urlencode \"client_secret=$TT_SECRET\" \\\n" +
     "  --data-urlencode 'code=" + code.replace(/'/g, "'\\''") + "' \\\n" +
     "  --data-urlencode 'grant_type=authorization_code' \\\n" +
     "  --data-urlencode 'redirect_uri=" + location.origin + location.pathname + "'";
-  box("Run this right away (the code expires within minutes). Replace PASTE_SECRET_HERE with the Sandbox client secret:", cmd, 8);
+  box("Step 1 (once per terminal window, before approving): store the Sandbox client secret in a variable. The input is hidden and not saved in history:", "read -rs 'TT_SECRET?Sandbox client secret: '", 1);
+  box("Step 2, right away (the code expires within minutes): copy and run this. It reads the secret from step 1:", cmd, 8);
   box("The one-time code on its own (" + code.length + " characters):", code, 4);
 }
 </script>
