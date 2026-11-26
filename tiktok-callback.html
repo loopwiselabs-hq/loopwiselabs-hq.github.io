@@ -1,17 +1,34 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TikTok authorization — Loopwise Labs</title><meta name="robots" content="noindex"><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.png"></head><body>
+<title>TikTok authorization — Loopwise Labs</title><meta name="robots" content="noindex"><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.png">
+<style>textarea{width:100%;font:13px/1.4 ui-monospace,Menlo,monospace;word-break:break-all;white-space:pre-wrap;box-sizing:border-box}button{margin:6px 0 18px;padding:6px 14px;cursor:pointer}</style></head><body>
 <h1>TikTok authorization</h1>
-<p class="muted">This page is used once by the Glowlane owner to connect our own TikTok account to our publishing software. It does not store or send anything.</p>
+<p class="muted">This page is used by the Glowlane owner to connect our own TikTok account to our publishing software. It does not store or send anything; the code stays in your browser.</p>
 <div id="out"><p>No authorization code in this address.</p></div>
 <script>
-// Shows the one-time authorization code from the address bar so the account owner can copy it.
+// Shows the one-time authorization code from the address bar so the account owner can exchange it.
 // Nothing is stored or sent anywhere from this page.
 var q = new URLSearchParams(location.search), out = document.getElementById("out");
+function box(label, text, rows) {
+  var p = document.createElement("p"); p.textContent = label; out.appendChild(p);
+  var t = document.createElement("textarea"); t.readOnly = true; t.rows = rows; t.value = text; out.appendChild(t);
+  var b = document.createElement("button"); b.textContent = "Copy";
+  b.onclick = function () { t.select(); navigator.clipboard.writeText(text).then(function () { b.textContent = "Copied ✓"; }); };
+  out.appendChild(b);
+}
 if (q.get("error")) {
   out.textContent = "TikTok returned an error: " + q.get("error") + " " + (q.get("error_description") || "");
 } else if (q.get("code")) {
-  out.innerHTML = "<p>Authorization received. Copy this one-time code (it expires in a few minutes):</p><pre id='c'></pre>";
-  document.getElementById("c").textContent = q.get("code");
+  out.innerHTML = "";
+  var code = q.get("code"), key = q.get("client_key") || "sbawgvekf5nnvhglrz";
+  var cmd = "curl -s -X POST https://open.tiktokapis.com/v2/oauth/token/ \\\n" +
+    "  -H 'Content-Type: application/x-www-form-urlencoded' \\\n" +
+    "  --data-urlencode 'client_key=" + key + "' \\\n" +
+    "  --data-urlencode 'client_secret=PASTE_SECRET_HERE' \\\n" +
+    "  --data-urlencode 'code=" + code.replace(/'/g, "'\\''") + "' \\\n" +
+    "  --data-urlencode 'grant_type=authorization_code' \\\n" +
+    "  --data-urlencode 'redirect_uri=" + location.origin + location.pathname + "'";
+  box("Run this right away (the code expires within minutes). Replace PASTE_SECRET_HERE with the Sandbox client secret:", cmd, 8);
+  box("The one-time code on its own (" + code.length + " characters):", code, 4);
 }
 </script>
 <p><a href="index.html">Loopwise Labs</a></p>
