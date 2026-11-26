@@ -1,0 +1,18 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TikTok authorization — Loopwise Labs</title><meta name="robots" content="noindex"><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.png"></head><body>
+<h1>TikTok authorization</h1>
+<p class="muted">This page is used once by the Glowlane owner to connect our own TikTok account to our publishing software. It does not store or send anything.</p>
+<div id="out"><p>No authorization code in this address.</p></div>
+<script>
+// Shows the one-time authorization code from the address bar so the account owner can copy it.
+// Nothing is stored or sent anywhere from this page.
+var q = new URLSearchParams(location.search), out = document.getElementById("out");
+if (q.get("error")) {
+  out.textContent = "TikTok returned an error: " + q.get("error") + " " + (q.get("error_description") || "");
+} else if (q.get("code")) {
+  out.innerHTML = "<p>Authorization received. Copy this one-time code (it expires in a few minutes):</p><pre id='c'></pre>";
+  document.getElementById("c").textContent = q.get("code");
+}
+</script>
+<p><a href="index.html">Loopwise Labs</a></p>
+</body></html>
